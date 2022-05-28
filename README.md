@@ -5,7 +5,9 @@ Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.
 	`pip install -r requirements.txt`
 2. Replace your Twitter API keys in the vars.py file:
 	`access_token_secret = 'Your key goes here'`
-3. Run:
+3. Specify a directory for the dataset files:
+	`csvdir = 'home/twemo/datasets'`
+4. Run:
 	`python /tweemo`
 # Usage
 1. Get tweets:
