@@ -7,8 +7,8 @@ Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.
 	`pip install -r requirements.txt`
 3. To enable the .env file, create a file called postactivate in the Scripts folder of your environment and add this line, changing the directory as appropriate (You can also skip this step by passing the tokens into the variables in vars.py as strings):
 	`set -a; source ~/twemo/.env; set +a`
-4. Replace your Twitter API keys in the .env file:
-	`export ACCESS_TOKEN_SECRET='Your key goes here'`
+4. Replace your Twitter API keys in the .env file (or the vars.py file):
+	`export ACCESS_TOKEN_SECRET='Your key goes here'` in .env or `access_token_secret = 'Your key goes here'` in vars.py
 5. Run:
 	`python /tweemo`
 # Usage
