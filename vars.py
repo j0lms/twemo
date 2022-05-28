@@ -21,6 +21,7 @@ emotion_labels = {
 
 account_list = [
 
+            # Provide user handles for the account roll
             'SylviaPlathBot',
             'DailyKerouac',
             'carsonbot',
@@ -41,6 +42,6 @@ account_list = [
 
         ]
 
-csvdir = '~/datasets'
+csvdir = 'twemo/datasets' # Provide a folder for the dataset.csv, test.csv, train.csv files
 
-test_string = 'This is a test string.'
+test_string = 'This is a test string.' # String to test after performing training
