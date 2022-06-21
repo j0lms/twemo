@@ -11,12 +11,12 @@ Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.
 	`python /tweemo`
 # Usage
 1. Get tweets:
-Allows you to get tweet-emotion pairs into the dataset.csv file
+Allows you to get tweet-emotion pairs into the dataset.csv file. You can specify an arbitrary amount of emotion labels that you will train with on by modifying the `emotion_labels` variable.
 2. Create/Update Dataset:
-Creates the test.csv and train.csv split
+Creates the test.csv and train.csv split.
 3. Train:
-Trains the model on the provided test and train files (URL only, delete cache to redownload)
+Trains the model on the provided test and train files.
 4. Predict string:
-Gives an emotion label prediction based on a string
+Gives an emotion label prediction based on a string with a percentage breakdown of a number of predictions.
 5. Timeline Diet:
-Gets predictions for all tweets in a timeline
+Gets prediction labels for all tweets in a user's timeline.

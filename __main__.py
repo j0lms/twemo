@@ -3,6 +3,9 @@ from funcs import main, update_dataset, get_tweets, train, predict, mass_predict
 if __name__ == '__main__':
     def help_me():
         print('')
+        print('')
+        print('')
+        print('')
         print('               Twitter Emotion Detector                     ')
         print('                                                            ')
         print('               1. Get tweets                                ')
@@ -16,21 +19,24 @@ if __name__ == '__main__':
         print('                                                            ')
     help_me()
     while True:
-        command = input('Input command: ')
-        if str(command) == 'q':
-            exit()
-        elif str(command) == 'h':
-            help_me()
-        elif str(command) == '1':
-            prompt = input('Fetch from the timeline (t), from an username (u), from an account list (a), from a popular search (p), add a tweet manually (s): ')
-            get_tweets(prompt)
-        elif str(command) == '2':
-            update_dataset()
-        elif str(command) == '3':
-            train()
-        elif str(command) == '4':
-            prompt = input('Input string: ')
-            predict(prompt)
-        elif str(command) == '5':
-            mass_predict()
+        try:
+            command = input('Input command: ')
+            if str(command) == 'q':
+                exit()
+            elif str(command) == 'h':
+                help_me()
+            elif str(command) == '1':
+                prompt = input('Fetch from the timeline (t), from an username (u), from an account list (a), from a popular search (p), add a tweet manually (s): ')
+                get_tweets(prompt)
+            elif str(command) == '2':
+                update_dataset()
+            elif str(command) == '3':
+                train()
+            elif str(command) == '4':
+                prompt = input('Input string: ')
+                predict(prompt)
+            elif str(command) == '5':
+                mass_predict()
+        except Exception as e:
+            print(e)
     main()

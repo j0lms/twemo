@@ -25,11 +25,12 @@ def TWEET_SET(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
-            next(reader)
+            next(reader) # Skipping first row
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
     path = download_from_url(URL[split], root=root,
+                             overwrite=True,
                              path=os.path.join(root, split + ".csv")
                              )
     return _RawTextIterableDataset("TWEET_SET", NUM_LINES[split],

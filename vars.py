@@ -19,7 +19,6 @@ emotion_labels = {
 
 account_list = [
 
-            # Provide user handles for the account roll
             'SylviaPlathBot',
             'DailyKerouac',
             'carsonbot',
@@ -40,6 +39,14 @@ account_list = [
 
         ]
 
-csvdir = 'twemo/datasets' # Provide a folder for the dataset.csv, test.csv, train.csv files
+csvdir = '/datasets' # This is where all the traning data goes
 
-test_string = 'This is a test string.' # String to test after performing training
+test_string = 'This is a test string'
+
+tweet_number = 10
+iteration_number = 2500
+
+# Hyperparameters
+EPOCHS = 10 # epoch
+LR = 5  # learning rate
+BATCH_SIZE = 64 # batch size for training

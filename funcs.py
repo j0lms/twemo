@@ -1,16 +1,33 @@
-from vars import csvdir, emotion_labels, consumer_key, consumer_secret, access_token, access_token_secret, account_list, test_string
+import torch
+import time
+import os
+import tweepy
+import csv
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from dataset import TWEET_SET
+from models import TextClassificationModel
+from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
+from torch.utils.data import DataLoader
+from torch.utils.data.dataset import random_split
+from torchtext.data.functional import to_map_style_dataset
+from vars import csvdir, emotion_labels, consumer_key, consumer_secret, access_token, access_token_secret, account_list, test_string, tweet_number, EPOCHS, LR, BATCH_SIZE, iteration_number
 
+os.chdir(csvdir)
+
+auth = tweepy.OAuth1UserHandler(
+    consumer_key, consumer_secret, access_token, access_token_secret
+    )
+api = tweepy.API(auth)
+tokenizer = get_tokenizer('spacy',language='en_core_web_sm')
 
 def main():
-    pass
+    from vars import csvdir, emotion_labels, consumer_key, consumer_secret, access_token, access_token_secret, account_list, test_string, tweet_number, EPOCHS, LR, BATCH_SIZE, iteration_number
 
 
 def get_tweets(prompt):
-    import os
-    import tweepy
-    import csv
 
-    os.chdir(csvdir)
 
     try:
         with open('dataset.csv', newline='') as csvfile:
@@ -22,24 +39,24 @@ def get_tweets(prompt):
     except FileNotFoundError:
         pass
 
-    auth = tweepy.OAuth1UserHandler(
-        consumer_key, consumer_secret, access_token, access_token_secret
-        )
-    api = tweepy.API(auth)
     if prompt == 'u':
         user = input('Input username: ')
-        tweets = api.user_timeline(screen_name=user, tweet_mode="extended")
+        tweets = tweepy.Cursor(api.user_timeline, screen_name=user, tweet_mode='extended').items(tweet_number)
     elif prompt == 't':
-        tweets = api.home_timeline(tweet_mode="extended")
+        tweets = tweepy.Cursor(api.home_timeline, tweet_mode='extended').items(tweet_number)
     elif prompt == 'p':
         q = input('Input search: ')
-        tweets = api.search_tweets(q,result_type='popular', tweet_mode="extended")
+        tweets = tweepy.Cursor(api.search_tweets, q,result_type='popular', tweet_mode='extended').items(tweet_number)
     elif prompt == 'a':
         for account in account_list:
-            account_tweets = api.user_timeline(screen_name=account, tweet_mode="extended")
+            account_tweets = tweepy.Cursor(api.user_timeline, screen_name=account, tweet_mode='extended').items(tweet_number)
             for tweet in account_tweets:
                 print('-' * 59)
-                print('Current Bot: {} | Tweet Text: {}'.format(tweet.author.name, tweet.full_text))
+                try:
+                    text = tweet.retweeted_status.full_text
+                except AttributeError:
+                    text = tweet.full_text
+                print('Current Bot: {} | Tweet Text: {}'.format(tweet.author.name, text))
                 print('')
                 print('Available emotions: ')
                 print('')
@@ -52,19 +69,25 @@ def get_tweets(prompt):
                 elif emotion == 'b':
                     break
                 else:
+                    print('-' * 59)
                     print('')
                     print('Saving...')
                     print('')
                     print('"{}","{}"'.format(emotion,tweet.full_text))
+                    print(tokenizer(tweet.full_text))
                     print('')
+                    print('-' * 59)
                     with open('dataset.csv', 'a', newline='') as csvfile:
                         writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-                        writer.writerow([int(emotion),str(tweet.full_text)])
-                        #current = [ [ row[0], row[1] ] for row in reader]
-                        # print('Current rows: {}'.format(len(current)))
+                        try:
+	                        text = tweet.retweeted_status.full_text
+                        except AttributeError:
+                            text = tweet.full_text
+                        writer.writerow([int(emotion),str(text)])
                     print('')
                     print('')
                     print('')
+
 
 
     elif prompt == 's':
@@ -77,11 +100,14 @@ def get_tweets(prompt):
         string = input('Input string: ')
         print('')
         emotion = input('Input emotion as integer: ')
+        print('-' * 59)
         print('')
         print('Saving...')
         print('')
         print('"{}","{}"'.format(emotion,string))
+        print(tokenizer(string))
         print('')
+        print('-' * 59)
         with open('dataset.csv', 'a', newline='') as csvfile:
             writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
             writer.writerow([int(emotion),str(string)])
@@ -92,7 +118,11 @@ def get_tweets(prompt):
     try:
         for tweet in tweets:
             print('-' * 59)
-            print('Author: {} | Tweet Text: {}'.format(tweet.author.name, tweet.full_text))
+            try:
+                text = tweet.retweeted_status.full_text
+            except AttributeError:
+                text = tweet.full_text
+            print('Author: {} | Tweet Text: {}'.format(tweet.author.name, text))
             print('')
             print('Available emotions: ')
             print('')
@@ -106,14 +136,21 @@ def get_tweets(prompt):
             elif emotion == 'b':
                 break
             else:
+                print('-' * 59)
                 print('')
                 print('Saving...')
                 print('')
                 print('"{}","{}"'.format(emotion,tweet.full_text))
+                print(tokenizer(tweet.full_text))
                 print('')
+                print('-' * 59)
                 with open('dataset.csv', 'a', newline='') as csvfile:
                     writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-                    writer.writerow([int(emotion),str(tweet.full_text)])
+                    try:
+                        text = tweet.retweeted_status.full_text
+                    except AttributeError:  # Not a Retweet
+                        text = tweet.full_text
+                    writer.writerow([int(emotion),str(text)])
                 print('')
                 print('')
                 print('')
@@ -122,12 +159,7 @@ def get_tweets(prompt):
 
 
 def update_dataset():
-    import os
-    import csv
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
 
-    os.chdir(csvdir)
 
     with open('dataset.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -141,14 +173,28 @@ def update_dataset():
             'tweets':tweets
             }
 
-    print(raw_data)
-
     df = pd.DataFrame(raw_data, columns=['emotions','tweets'])
+    print('-' * 59)
+    print('')
+    print('| dataframe')
     print(df)
+    print('')
+    print('-' * 59)
 
     train, test = train_test_split(df, test_size=0.2)
+
+    print('-' * 59)
+    print('')
+    print('| train.csv')
     print(train)
+    print('')
+    print('-' * 59)
+    print('-' * 59)
+    print('')
+    print('| test.csv')
     print(test)
+    print('')
+    print('-' * 59)
 
     train.to_csv('train.csv', index=False)
     test.to_csv('test.csv', index=False)
@@ -157,18 +203,8 @@ def update_dataset():
 
 
 def train():
-    import torch
-    import time
-    from dataset import TWEET_SET
-    from models import TextClassificationModel
-    from torchtext.data.utils import get_tokenizer
-    from torchtext.vocab import build_vocab_from_iterator
-    from torch.utils.data import DataLoader
-    from torch.utils.data.dataset import random_split
-    from torchtext.data.functional import to_map_style_dataset
 
 
-    tokenizer = get_tokenizer('basic_english')
     train_iter = TWEET_SET(split='train')
 
     def yield_tokens(data_iter):
@@ -180,6 +216,7 @@ def train():
 
     text_pipeline = lambda x: vocab(tokenizer(x))
     label_pipeline = lambda x: int(x) - 1
+
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -241,10 +278,6 @@ def train():
         return total_acc/total_count
 
 
-    EPOCHS = 10
-    LR = 5
-    BATCH_SIZE = 64
-
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=LR)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
@@ -294,16 +327,10 @@ def train():
 
 
 def predict(text):
-    import torch
-    from vars import emotion_labels
-    from dataset import TWEET_SET
-    from models import TextClassificationModel
-    from torchtext.data.utils import get_tokenizer
-    from torchtext.vocab import build_vocab_from_iterator
+
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    tokenizer = get_tokenizer('basic_english')
     train_iter = TWEET_SET(split='train')
 
     def yield_tokens(data_iter):
@@ -326,23 +353,30 @@ def predict(text):
             output = model(text, torch.tensor([0]))
             return output.argmax(1).item() + 1
 
-    model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
-    model = model.to("cpu")
 
-    print('This sparks {}. \nOriginal: {}'.format(emotion_labels[predict(text, text_pipeline)],text))
+    pred_list = []
+
+    for i in range(iteration_number):
+        model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
+        model = model.to("cpu")
+        prediction = predict(text, text_pipeline)
+        pred_list.append(prediction)
+        print('This sparks {}'.format(emotion_labels[prediction]))
+    print('-' * 59)
+    print('')
+    print('Text: {}'.format(text))
+    print('')
+    for label in emotion_labels:
+        print('| likelihood of {} | iterations #{} ({}%)'.format(emotion_labels[label], pred_list.count(label), (pred_list.count(label)/len(pred_list))*100))
+    print('')
+    print('-' * 59)
+
 
 def mass_predict():
-    import torch
-    import tweepy
-    from vars import emotion_labels
-    from dataset import TWEET_SET
-    from models import TextClassificationModel
-    from torchtext.data.utils import get_tokenizer
-    from torchtext.vocab import build_vocab_from_iterator
+
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    tokenizer = get_tokenizer('basic_english')
     train_iter = TWEET_SET(split='train')
 
     def yield_tokens(data_iter):
@@ -365,15 +399,40 @@ def mass_predict():
             output = model(text, torch.tensor([0]))
             return output.argmax(1).item() + 1
 
-    model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
-    model = model.to("cpu")
 
-    auth = tweepy.OAuth1UserHandler(
-        consumer_key, consumer_secret, access_token, access_token_secret
-        )
-    api = tweepy.API(auth)
+    tweets = tweepy.Cursor(api.home_timeline, tweet_mode='extended').items(tweet_number)
 
-    tweets = api.home_timeline(tweet_mode="extended")
+    pred_list = []
 
     for tweet in tweets:
-        print('Original: {}.\n \nThis sparks {}'.format(tweet.full_text,emotion_labels[predict(tweet.full_text, text_pipeline)]))
+        tweet_list = []
+        for i in range(iteration_number):
+            model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
+            model = model.to("cpu")
+            prediction = predict(tweet.full_text, text_pipeline)
+            tweet_list.append(prediction)
+
+        label_dict = {tweet_list.count(label):label for label in emotion_labels }
+        highest = label_dict[sorted(label_dict)[len(label_dict)-1]]
+        pred_list.append(highest)
+
+
+        print('-' * 59)
+        print('This sparks {}'.format(emotion_labels[highest]))
+        print('-' * 59)
+        print('')
+        print('Text: {}'.format(tweet.full_text))
+        print('')
+        for label in emotion_labels:
+            print('| likelihood of {} | iterations #{} ({}%)'.format(emotion_labels[label], tweet_list.count(label), (tweet_list.count(label)/len(tweet_list))*100))
+        print('')
+        print('-' * 59)
+
+    print('-' * 59)
+    print('')
+    print('Total emotional consumption:')
+    print('')
+    for label in emotion_labels:
+        print('Total {}: {} tweets ({}%)'.format(emotion_labels[label], pred_list.count(label), (pred_list.count(label)/len(pred_list))*100))
+    print('')
+    print('-' * 59)
