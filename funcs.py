@@ -71,7 +71,7 @@ def get_tweets(prompt):
                 try:
                     if tweet.entities['media']:
                         media_check = True
-                except:
+                except KeyError:
                     media_check = False
                 print('Current Bot: {} | Media: {} | Tweet Text: {}'.format(tweet.author.name, media_check, text))
                 print('')
@@ -182,7 +182,7 @@ def get_tweets(prompt):
             try:
                 if tweet.entities['media']:
                     media_check = True
-            except:
+            except KeyError:
                 media_check = False
             print('Author: {} | Media: {} | Tweet Text: {}'.format(tweet.author.name, media_check, text))
             print('')
