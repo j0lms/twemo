@@ -26,7 +26,7 @@ if __name__ == '__main__':
             elif str(command) == 'h':
                 help_me()
             elif str(command) == '1':
-                prompt = input('Fetch from the timeline (t), from an username (u), from an account list (a), from a popular search (p), add a tweet manually (s): ')
+                prompt = input('Fetch from the timeline (t), from an username (u), from an account list (a), from a popular search (p), add a tweet manually (s), add a tweet from a link (URL): ')
                 get_tweets(prompt)
             elif str(command) == '2':
                 update_dataset()
@@ -39,4 +39,4 @@ if __name__ == '__main__':
                 mass_predict()
         except Exception as e:
             print(e)
-    main()
+        main()

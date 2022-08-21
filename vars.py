@@ -44,7 +44,7 @@ csvdir = '/datasets' # This is where all the traning data goes
 test_string = 'This is a test string'
 
 tweet_number = 10
-iteration_number = 2500
+iteration_number = 500
 
 # Hyperparameters
 EPOCHS = 10 # epoch
