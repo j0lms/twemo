@@ -15,8 +15,8 @@ Allows you to get tweet-emotion pairs into the dataset.csv file. You can specify
 2. Create/Update Dataset:
 Creates the test.csv and train.csv split.
 3. Train:
-Trains the model on the provided test.csv and train.csv files.
-4. ~~Predict string:
-Gives an emotion label prediction based on a string with a percentage breakdown of a number of predictions (iterations).~~
+Trains the model on the provided test.csv and train.csv files and uses the resulting model to predict the emotion of a test character string.
+4. ~~Predict tweet:
+Gives an emotion label prediction based on a tweet with a percentage breakdown of a number of predictions (iterations).~~
 5. ~~Timeline Diet:
 Gets prediction labels for all tweets in a user's timeline, popular search results, or username search results.~~
