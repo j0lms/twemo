@@ -15,6 +15,8 @@ from torch.utils.data.dataset import random_split
 from torchtext.data.functional import to_map_style_dataset
 from vars import csvdir, emotion_labels, consumer_key, consumer_secret, access_token, access_token_secret, account_list, test_string, tweet_number, EPOCHS, LR, BATCH_SIZE, iteration_number
 
+iteration_number += 1
+
 os.chdir(csvdir)
 
 auth = tweepy.OAuth1UserHandler(
@@ -27,8 +29,16 @@ tokenizer = get_tokenizer('spacy',language='en_core_web_sm')
 def main():
     pass
 
-def get_tweets(prompt):
+def clearConsole():
+    command = 'clear'
+    if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
+        command = 'cls'
+    os.system(command)
 
+clearConsole()
+
+def get_tweets(prompt):
+    clearConsole()
 
     try:
         with open('dataset.csv', newline='') as csvfile:
@@ -63,6 +73,7 @@ def get_tweets(prompt):
             account_tweets = tweepy.Cursor(api.user_timeline, screen_name=account, tweet_mode='extended').items(tweet_number)
             #account_tweets = api.user_timeline(screen_name=account, tweet_mode="extended")
             for tweet in account_tweets:
+                clearConsole()
                 print('-' * 59)
                 try:
                     text = tweet.retweeted_status.full_text
@@ -110,6 +121,7 @@ def get_tweets(prompt):
 
 
     elif prompt == 's':
+        clearConsole()
         print('-' * 59)
         print('Available emotions: ')
         print('')
@@ -137,6 +149,7 @@ def get_tweets(prompt):
         print('')
 
     elif prompt == 'l':
+        clearConsole()
         print('-' * 59)
         print('Available emotions: ')
         print('')
@@ -174,6 +187,7 @@ def get_tweets(prompt):
 
     try:
         for tweet in tweets:
+            clearConsole()
             print('-' * 59)
             try:
                 text = tweet.retweeted_status.full_text
@@ -223,11 +237,22 @@ def get_tweets(prompt):
 
 
 def update_dataset():
-
+    clearConsole()
 
     with open('dataset.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
         emotions = [ row[0] for row in reader]
+
+    label_count = dict()
+
+    with open('dataset.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            if row[0] not in label_count:
+                label_count[row[0]] = 0
+            label_count[row[0]] += 1
+
+    print(label_count)
 
     with open('dataset.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -300,7 +325,7 @@ def update_dataset():
 
 
 def train():
-
+    clearConsole()
     #data processing pipeline
 
     train_iter = TWEET_SET(split='train')
@@ -425,9 +450,11 @@ def train():
     model = model.to("cpu")
 
     print('This sparks {}. \nOriginal: {}'.format(emotion_labels[predict(test_string, text_pipeline)],test_string))
+    return model
 
 
 def predict(link):
+    clearConsole()
     m = re.search('\/([0-9]+)(?=[^\/]*$)', link)
     text = api.get_status(m.group(1), tweet_mode='extended').full_text
 
@@ -451,6 +478,7 @@ def predict(link):
     vocab_size = len(vocab)
     emsize = 64
 
+
     def predict(text, text_pipeline):
         with torch.no_grad():
             text = torch.tensor(text_pipeline(text))
@@ -463,9 +491,10 @@ def predict(link):
     pred_list = []
 
     for i in range(iteration_number):
-        model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
-        model = model.to("cpu")
+        model = train()
+        #model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
         prediction = predict(text, text_pipeline)
+        #model = model.to("cpu")
         pred_list.append(prediction)
         label_dict = {pred_list.count(label):label for label in emotion_labels }
         highest = label_dict[sorted(label_dict)[len(label_dict)-1]]
@@ -484,7 +513,7 @@ def predict(link):
     print('-' * 59)
 
 def mass_predict(prompt):
-
+    clearConsole()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -529,8 +558,9 @@ def mass_predict(prompt):
     for tweet in tweets:
         tweet_list = []
         for i in range(iteration_number):
-            model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
-            model = model.to("cpu")
+            #model = TextClassificationModel(vocab_size, emsize, num_class).to(device)
+            #model = model.to("cpu")
+            model = train()
             prediction = predict(tweet.full_text, text_pipeline)
             tweet_list.append(prediction)
 
