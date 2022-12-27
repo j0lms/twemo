@@ -1,14 +1,18 @@
+![plot](https://www.pythonanywhere.com/user/j0lms/files/home/j0lms/mysite/static/img/plots/1587851263210823680.svg)
+<img src="https://www.pythonanywhere.com/user/j0lms/files/home/j0lms/mysite/static/img/plots/1587851263210823680.svg">
+
+
 # twemo
-Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0. Based on the text classification model provided in [this example](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html).
+Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0. Based on the text classification model provided in [this example](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html). Currently not maintained.
 # Install (only linux)
 1. Download the requirements:
-	`pip install -r requirements.txt` (not working)
+	`pip install -r requirements.txt`
 2. Replace your Twitter API keys in the vars.py file:
 	`access_token_secret = 'Your key goes here'`
 3. Specify a directory for the dataset files:
 	`csvdir = 'home/twemo/datasets'`
 4. Run:
-	`python /tweemo`
+	`python /twemo`
 # Usage
 1. Get tweets:
 	Allows you to get tweet-emotion pairs into the dataset.csv file. You can specify an arbitrary amount of emotion labels for the model to  train with by 		modifying/extending the `emotion_labels` variable.
@@ -19,4 +23,5 @@ Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.
 4. Predict tweet:
 	Prompts for any tweet URL to fetch the tweet text and run the model against it. Outputs the highest tensor as the prediction of what the emotion of the  	 text would be. Additionally it prints the output of all tensors.
 6. ~~Timeline Diet:
-Gets prediction labels for all tweets in a user's timeline, popular search results, or username search results.~~ Timeline interaction is currently not available.
+Gets prediction labels for all tweets in a user's timeline, popular search results, or username search results.~~ Timeline interaction is currently not available. Will fix this eventually.
+

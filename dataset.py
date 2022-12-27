@@ -25,7 +25,7 @@ def TWEET_SET(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
-            next(reader) # Skipping first row
+            next(reader)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
