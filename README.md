@@ -1,6 +1,5 @@
-![plot](https://www.pythonanywhere.com/user/j0lms/files/home/j0lms/mysite/static/img/plots/1587851263210823680.svg)
-<img src="https://www.pythonanywhere.com/user/j0lms/files/home/j0lms/mysite/static/img/plots/1587851263210823680.svg">
-
+![Alt text](./plot.svg)
+<img src="./plot.svg">
 
 # twemo
 Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0. Based on the text classification model provided in [this example](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html). Currently not maintained.
