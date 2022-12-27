@@ -1,4 +1,3 @@
-![Alt text](./plot.svg)
 <img src="./plot.svg">
 
 # twemo
