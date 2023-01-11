@@ -1,6 +1,6 @@
 <img src="./plot.svg">
 
-# twemo
+# twemo [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0. Based on the text classification model provided in [this example](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html).
 # Install (only linux)
 1. Download the requirements:
