@@ -359,7 +359,23 @@ def train():
         return total_acc/total_count
 
 
-    criterion = torch.nn.CrossEntropyLoss()
+    label_count = dict()
+
+    with open(current_dataset, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            if row[0] not in label_count:
+                label_count[row[0]] = 0
+            label_count[row[0]] += 1
+
+    label_keys = list(label_count.keys())
+    label_values = list(label_count.keys())
+    sorted_keys = sorted(int(key) for key in label_keys)
+    sorted_values = [label_count[str(i)] for i in sorted_keys]
+
+    criterion = torch.nn.CrossEntropyLoss(
+                            weight=torch.tensor([sum(sorted_values)/int(i) for i in sorted_values])
+                            )
     optimizer = torch.optim.SGD(model.parameters(), lr=LR)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
     total_accu = None
