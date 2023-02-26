@@ -20,6 +20,3 @@ Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.
 	Trains the model on the provided test.csv and train.csv files and uses the resulting model to predict the emotion of a test character string. Also this 	saves a `model.pt` file for later inference. 
 4. Predict tweet:
 	Prompts for any tweet URL to fetch the tweet text and run the model against it. Outputs the highest tensor as the prediction of what the emotion of the  	 text would be. Additionally it prints the output of all tensors.
-6. ~~Timeline Diet:
-Gets prediction labels for all tweets in a user's timeline, popular search results, or username search results.~~ Timeline interaction is currently not available.
-
