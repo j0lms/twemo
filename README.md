@@ -1,7 +1,7 @@
 <img src="./plot.svg">
 
 # twemo
-Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0.
+Twitter emotion detection using PyTorch. Built with Python 3.9.5 and Torch 1.11.0 and Tweepy 4.9.0. Archived in light of free API shutdown.
 # Install (only linux)
 1. Download the requirements:
 	`pip install -r requirements.txt`
